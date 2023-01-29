@@ -1,0 +1,8 @@
+COMP 321 Project 2: Word Count
+<Replace with your name and NetID.>
+
+---(Do not write lines of text that exceed the width of this line.)------------
+
+TESTING STRATEGY
+
+<Replace with a detailed description of your testing strategy.>
