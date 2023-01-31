@@ -4,7 +4,7 @@
  * This program counts the characters, words, and lines in one or more files,
  * depending on the command-line arguments.
  * 
- * <Put your name and NetID here>
+ * <Michelle Pang, yp29>
  */
 
 #include <ctype.h>
@@ -22,7 +22,16 @@ struct counts {
 	int   word_count;
 	int   line_count;
 };
+struct file_count{
+	char *file_name;
+	struct counts count;
+}
+struct node {
+	struct file_count data;
+	struct node* next;
+	struct node* prev;
 
+}
 static void	app_error_fmt(const char *fmt, ...);
 static int	do_count(char *input_files[], const int nfiles,
 		    const bool char_flag, const bool word_flag,
@@ -53,7 +62,50 @@ app_error_fmt(const char *fmt, ...)
 	va_end(ap);
 	fprintf(stderr, "\n");
 }
+/**
+ * Requires:
+ *   The "head" argument must not be NULL and must point to an allocated structure of type "struct node**"
+ *   The "new data" argument must not be NULL and must point to an allocated structure of type "struct file_count"
+ * Effect:
+ *   Given the reference to the head of a list, create a new node from the file_count structure,
+ * 	 append this new node at the end.
+ * 
+*/
+static void 
+append(struct node** head, struct file_count new_data)
+{	
+	//allocation malloc memory for the new node 
+	//while initializing a new node
+	struct node* new_node = (struct node*) malloc(sizeof(struct node));
+	//create a "last" node pointing to the head for later traversal
+	struct node *last = *head;
+	//assign data to the new node, which new_node is the last node on the linked list
+	new_node -> data = new_data;
+	//and make the next node as NULL
+	new_node -> next = NULL;
 
+	//If the linked list is empty, the new node becomes the head node
+	if (*head == NULL)
+	{
+		*head = new_node;
+		//Terminate the function
+		return;
+	}
+	//If the linked list is not empty, traverse until we reach the last node
+	while(last -> next != NULL)
+	{
+		//update the last node
+		last = last -> next;
+	}
+	//change the prev of the new node
+	new_node -> prev = last;
+	//change the next of the new node
+	last -> next = new_node;
+
+	//end the function
+	return;
+
+}
 /*
  * Requires:
  *   The "fp" argument must be a valid FILE pointer.
@@ -79,6 +131,67 @@ print_counts(FILE *fp, struct counts *cnts, const char *name,
 		fprintf(fp, "%8d", cnts->char_count);
 	fprintf(fp, " %s\n", name);
 }
+/**
+ * Requires:
+ *   The "head" argument must not be NULL and must point to an allocated structure of type "struct node*"
+ * Effects:
+ *   Print out the file in "ASCIIbetical" order based on the filename
+*/
+static void 
+print_sort(struct node* head, const bool char_flag, const bool word_flag, const bool line_flag)
+{
+    //Declare a "current" node for iteration
+    struct node* current;
+    //Iterate every node in the linked list until the entire list finishes
+    while(head != NULL)
+    {
+        //1. Initialize a "min" node with an initial reference to the head node
+        struct node* min = head;
+        //Assign head node to the current node
+        current = head;
+        //Find the minimum file name -- the name has the lowest ASCII value
+        while(current != NULL)
+        {	//If 
+            if (strcmp(min -> data.file_name, current -> data.count) > 0):
+            {
+                //2. Assign "currrent" node to be the "min" node if it is smaller than "min" node
+                min = current;
+            }
+            //3. Update current to continue, it is the tail when its next is NULL
+            current -> current.next;
+        }
+		//Print information of the file with lowest "ASCIIbetical" order
+        print_counts(stdout, &min -> data.count, min -> data.file_name, char_flag, word_flag, line_flag)；
+		//Store references to min's next and prev nodes
+		struct node* prev = min -> prev;
+		struct node* next = min -> next;
+		//4. Remove the "min" current node from the linked list
+		//Let "head" be NULL when "min" is the only node in the list
+		if((min == head) && (next == NULL))
+		{
+			//End the sorting
+			head = NULL;
+		}
+		//If the "min" is the head, 
+		elseif(min == head){
+			//Let the head to be the next node
+			head = next;
+			head -> prev = NULL;
+		}
+		//If "min" is the last node(the tail)
+		elseif(next == NULL){
+			prev -> next = NULL;
+		}
+		//If "min" is in the middle
+		else{
+			prev -> next = next;
+			next -> prev = prev;
+		}
+		//Free "min" from the memory;
+		Free(min);
+    }
+}
+
 
 /*
  * Requires:
