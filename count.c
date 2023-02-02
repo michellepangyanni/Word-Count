@@ -25,18 +25,23 @@ struct counts {
 struct file_count{
 	char *file_name;
 	struct counts count;
-}
+};
 struct node {
 	struct file_count data;
 	struct node* next;
 	struct node* prev;
 
-}
-static void	app_error_fmt(const char *fmt, ...);
-static int	do_count(char *input_files[], const int nfiles,
+};
+static void	
+app_error_fmt(const char *fmt, ...);
+
+static int	
+do_count(char *input_files[], const int nfiles,
 		    const bool char_flag, const bool word_flag,
 		    const bool line_flag, const bool test_flag);
-static void	print_counts(FILE *fp, struct counts *cnts, const char *name,
+			
+static void	
+print_counts(FILE *fp, struct counts *cnts, const char *name,
 		    const bool char_flag, const bool word_flag,
 		    const bool line_flag);
 
@@ -152,16 +157,17 @@ print_sort(struct node* head, const bool char_flag, const bool word_flag, const 
         //Find the minimum file name -- the name has the lowest ASCII value
         while(current != NULL)
         {	//If 
-            if (strcmp(min -> data.file_name, current -> data.count) > 0):
+            if (strcmp(min -> data.file_name, current -> data.file_name) > 0)
             {
                 //2. Assign "currrent" node to be the "min" node if it is smaller than "min" node
                 min = current;
             }
             //3. Update current to continue, it is the tail when its next is NULL
-            current -> current.next;
+            current = current -> next;
         }
 		//Print information of the file with lowest "ASCIIbetical" order
-        print_counts(stdout, &min -> data.count, min -> data.file_name, char_flag, word_flag, line_flag)；
+        print_counts(stdout, &min -> data.count, min -> data.file_name, char_flag, word_flag, line_flag);
+
 		//Store references to min's next and prev nodes
 		struct node* prev = min -> prev;
 		struct node* next = min -> next;
@@ -173,13 +179,13 @@ print_sort(struct node* head, const bool char_flag, const bool word_flag, const 
 			head = NULL;
 		}
 		//If the "min" is the head, 
-		elseif(min == head){
+		else if(min == head){
 			//Let the head to be the next node
 			head = next;
 			head -> prev = NULL;
 		}
 		//If "min" is the last node(the tail)
-		elseif(next == NULL){
+		else if(next == NULL){
 			prev -> next = NULL;
 		}
 		//If "min" is in the middle
@@ -216,19 +222,82 @@ static int
 do_count(char *input_files[], const int nfiles, const bool char_flag,
     const bool word_flag, const bool line_flag, const bool test_flag)
 {
-	struct counts remove_me = { -1, -1, -1 };
+	int error = 0;
+	// Create an instance of the count structs to store the totals
+	struct counts countTotal = {0,0,0};
+	// Initialize the head node to be NULL
+	struct node* head = NULL;
+	//Iterate over each file
+	for (int i = 0; i < nfiles; i++){
+		//open the current file to read
+		FILE *cur_file = fopen(input_files[i], "r");
+		//Catch the error if we cannot open the file
+		if (cur_file == NULL){
+			app_error_fmt("cannot open file \'%s\'", input_files[i]);
+			//Set error value to 1
+			error = 1;
+			//Continue to the next file after reporting the eror
+			continue;
+		}
 
-	// Prevent "unused parameter" warnings.  REMOVE THESE STATEMENTS!
-	(void)input_files;
-	(void)nfiles;
-	(void)char_flag;
-	(void)word_flag;
-	(void)line_flag;
-	(void)test_flag;
-	// Prevent "unused function" warnings.  REMOVE THESE STATEMENTS!
-	app_error_fmt("Remove this function call!");
-	print_counts(stdout, &remove_me, "remove me", false, false, false);
-	return (0);
+		// Create an instance of the file_count structure for the current file
+		struct file_count currentFile_count;
+		currentFile_count.file_name = input_files[i];
+		currentFile_count.count.char_count = 0;
+		currentFile_count.count.line_count = 0;
+		currentFile_count.count.word_count = 0;
+		//Testing the cannot read file error
+		// if (test_flag){
+		// 	 close(fileno(cur_file));
+		// }
+		//Make prev_c initially a space
+		int prev_c = 32;
+		//Create the character for the while loop
+		int c;
+		//Iterate over each character in the file until the end of the file is reached
+		while ((c = fgetc(cur_file)) != EOF){
+			//Update the total and current file character count
+			countTotal.char_count += 1;
+			currentFile_count.count.char_count += 1;
+
+			//Check if we have begun a new word, and update the word counts to account for the previous word. 
+			//A word is detected for 1. it is not a space. 2. the previous character is a space
+			if (!isspace(c) && isspace(prev_c)){
+				countTotal.word_count += 1;
+				currentFile_count.count.word_count += 1;
+			}
+			//Update line count when the current character is the new line character
+			if (c == '\n'){
+				countTotal.line_count += 1;
+				currentFile_count.count.line_count += 1;
+			}
+			//Set the previous character to the current character for the next iteration
+			prev_c = c;
+
+		}
+		//Catch the error when the file cannot be read
+		if(!feof(cur_file)){
+			app_error_fmt("cannot read file \'%s\'", input_files[i]);
+			error = 1;
+		}
+		//Append your current file's node to the linked list
+		append(&head, currentFile_count);
+	}
+	//Print the counts in ASCIIbetical order
+	print_sort(head, char_flag, word_flag, line_flag);
+	//If the flag is false, we still want to print it, but its count value is 0
+	if (!char_flag){
+		countTotal.char_count = 0;
+	}
+	if(!word_flag){
+		countTotal.word_count = 0;
+	}
+	if(!line_flag){
+		countTotal.line_count = 0;
+	}
+	//Print total counts
+	print_counts(stdout, &countTotal, "total", true, true, true);
+	return (error);
 }
 
 /*
