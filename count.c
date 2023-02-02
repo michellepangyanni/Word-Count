@@ -247,9 +247,9 @@ do_count(char *input_files[], const int nfiles, const bool char_flag,
 		currentFile_count.count.line_count = 0;
 		currentFile_count.count.word_count = 0;
 		//Testing the cannot read file error
-		// if (test_flag){
-		// 	 close(fileno(cur_file));
-		// }
+		if (test_flag){
+			 close(fileno(cur_file));
+		}
 		//Make prev_c initially a space
 		int prev_c = 32;
 		//Create the character for the while loop
