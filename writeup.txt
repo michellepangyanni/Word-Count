@@ -1,8 +1,84 @@
 COMP 321 Project 2: Word Count
-<Replace with your name and NetID.>
+<Michelle Pang, yp29>
 
 ---(Do not write lines of text that exceed the width of this line.)------------
 
 TESTING STRATEGY
 
-<Replace with a detailed description of your testing strategy.>
+Black Box Testig Strategy: <
+
+1. Input file only contains an empty line, should return 1 word, 0 line, 
+and 1 character.
+
+2. Input file only contains many, n for example, empty lines, should 
+return n line, 0 word, and n character. 
+
+3. Input file contains many odd characters such as % & ( @ ! *)
+
+4. Input file contains new lines in weird places. 
+eg. New lines in between large chunks of texts, new line at the beginning 
+or the end of the file, or many new lines in between texts.              //should i say new line or empty line here??
+
+5. Input files with names that are of different ASCIIbetical orders.
+eg. file_name = 0.txt, file_name = xyz, file_name = XYZ， file_name = abc
+
+6. Input file contains odd words such as @#$^%&^*&)()_  and hyphenated words.
+
+7. Input file has text and multiple empty lines.
+
+8. Input file only contains double spaces.
+
+9. Input files are all error files
+
+10. The first input file is an invalid file
+
+11. Input files that does not exist. 
+
+12. Input files are a mix of valid files and invalid files.
+
+13. Input file only has one word.
+
+14. Input file only has one character.
+
+15. Input files are multiple files of the same file.
+
+>
+
+（NOETEs:
+new lines in weird places
+weird decision point, make sure adding that points correctly
+how to do with haffiniated word, 
+
+
+what can mess up my program
+
+Ordering in the linked list.
+
+points to locations that does not exist）
+
+
+White Box Testing Strategy(categorized by function) <
+
+1. The input file is empty, to test line295-303. 
+2. The input file has only one character/word
+3. The input files has file names that are not in ASCIIbetical order
+4. ... to ensure that the program print error and stops 
+5. To test line 269: a input file that has many random spaces between texts, to ensure A word is detected for 
+			1. it is not a space. 
+			2. the previous character is a space
+6. Input file is a new line. To test line 276: Update line count when the current character is the new line character
+7. Test that the program catches the error when the file cannot be read and stops
+8. 
+
+
+
+
+weird cases
+how to count c, l, w. 
+Try to find edge case that might mess up.
+A file does not have a new line at the end.
+counting the last word.
+Invalid name that does not exist.
+New line is a character.
+
+>

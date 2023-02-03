@@ -1,10 +1,10 @@
 /*
  * COMP 321 Project 2: Word Count
- *
  * This program counts the characters, words, and lines in one or more files,
  * depending on the command-line arguments.
  * 
  * <Michelle Pang, yp29>
+ * ---(Do not write lines of text that exceed the width of this line.)----------
  */
 
 #include <ctype.h>
@@ -26,6 +26,9 @@ struct file_count{
 	char *file_name;
 	struct counts count;
 };
+/**
+ * A linked list node.
+*/
 struct node {
 	struct file_count data;
 	struct node* next;
@@ -69,7 +72,8 @@ app_error_fmt(const char *fmt, ...)
 }
 /**
  * Requires:
- *   The "head" argument must not be NULL and must point to an allocated structure of type "struct node**"
+ *   The "head" argument must not be NULL and must point to an allocated 
+ * structure of type "struct node**"
  *   The "new data" argument must not be NULL and must point to an allocated structure of type "struct file_count"
  * Effect:
  *   Given the reference to the head of a list, create a new node from the file_count structure,
@@ -79,7 +83,7 @@ app_error_fmt(const char *fmt, ...)
 static void 
 append(struct node** head, struct file_count new_data)
 {	
-	//allocation malloc memory for the new node 
+	//allocate malloc memory for the new node 
 	//while initializing a new node
 	struct node* new_node = (struct node*) malloc(sizeof(struct node));
 	//create a "last" node pointing to the head for later traversal
@@ -156,7 +160,7 @@ print_sort(struct node* head, const bool char_flag, const bool word_flag, const 
         current = head;
         //Find the minimum file name -- the name has the lowest ASCII value
         while(current != NULL)
-        {	//If 
+        {	//If not in ASCIIbetical order, make the current node the new new min node
             if (strcmp(min -> data.file_name, current -> data.file_name) > 0)
             {
                 //2. Assign "currrent" node to be the "min" node if it is smaller than "min" node
@@ -261,7 +265,9 @@ do_count(char *input_files[], const int nfiles, const bool char_flag,
 			currentFile_count.count.char_count += 1;
 
 			//Check if we have begun a new word, and update the word counts to account for the previous word. 
-			//A word is detected for 1. it is not a space. 2. the previous character is a space
+			//A word is detected for 
+			//1. it is not a space. 
+			//2. the previous character is a space
 			if (!isspace(c) && isspace(prev_c)){
 				countTotal.word_count += 1;
 				currentFile_count.count.word_count += 1;
