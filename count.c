@@ -17,36 +17,42 @@
 
 #include "csapp.h"
 
+/**
+ * A structure that tracks character, word, and line counts in a given file.
+*/
 struct counts {
 	int   char_count;
 	int   word_count;
 	int   line_count;
 };
+
+/**
+ * A structure that tracks file name and count values in the given file.
+*/
 struct file_count{
-	char *file_name;
-	struct counts count;
+	char *file_name;		//Reference to the file name.
+	struct counts count;	//Information of file count.
 };
+
 /**
  * A linked list node.
 */
 struct node {
-	struct file_count data;
-	struct node* next;
-	struct node* prev;
-
+	struct file_count data; //Information of the file.
+	struct node* next;		//Reference to the next node.
+	struct node* prev;		//Reference to the previous node.
 };
-static void	
-app_error_fmt(const char *fmt, ...);
 
-static int	
-do_count(char *input_files[], const int nfiles,
+static void	app_error_fmt(const char *fmt, ...);
+static int	do_count(char *input_files[], const int nfiles,
 		    const bool char_flag, const bool word_flag,
 		    const bool line_flag, const bool test_flag);
-			
-static void	
-print_counts(FILE *fp, struct counts *cnts, const char *name,
+static void	print_counts(FILE *fp, struct counts *cnts, const char *name,
 		    const bool char_flag, const bool word_flag,
 		    const bool line_flag);
+static void append(struct node** head, struct file_count new_data);
+static void print_sort(struct node* head, const bool char_flag, 
+const bool word_flag, const bool line_flag);
 
 /*
  * Requires:
@@ -70,51 +76,54 @@ app_error_fmt(const char *fmt, ...)
 	va_end(ap);
 	fprintf(stderr, "\n");
 }
+
 /**
  * Requires:
  *   The "head" argument must not be NULL and must point to an allocated 
- * structure of type "struct node**"
- *   The "new data" argument must not be NULL and must point to an allocated structure of type "struct file_count"
+ * 	 structure of type "struct node**".
+ *   The "new data" argument must not be NULL and must point to 
+ *   an allocated structure of type "struct file_count".
  * Effect:
- *   Given the reference to the head of a list, create a new node from the file_count structure,
- * 	 append this new node at the end.
+ *   Given the reference to the head of a list, create a new node from 
+ *   the file_count structure,nappend this new node at the end.
  * 
 */
 static void 
 append(struct node** head, struct file_count new_data)
 {	
-	//allocate malloc memory for the new node 
-	//while initializing a new node
+	//Allocate malloc memory for the new node.
+	//while initializing a new node.
 	struct node* new_node = (struct node*) malloc(sizeof(struct node));
-	//create a "last" node pointing to the head for later traversal
+	//Create a "last" node pointing to the head for later traversal.
 	struct node *last = *head;
-	//assign data to the new node, which new_node is the last node on the linked list
+	//Assign data to the new node, which new_node is the last node on 
+	//the linked list.
 	new_node -> data = new_data;
-	//and make the next node as NULL
+	//And make the next node as NULL.
 	new_node -> next = NULL;
 
-	//If the linked list is empty, the new node becomes the head node
+	//If the linked list is empty, the new node becomes the head node.
 	if (*head == NULL)
 	{
 		*head = new_node;
-		//Terminate the function
+		//Terminate the function.
 		return;
 	}
-	//If the linked list is not empty, traverse until we reach the last node
+	//If the linked list is not empty, traverse until we reach the last node.
 	while(last -> next != NULL)
 	{
-		//update the last node
+		//Update the last node.
 		last = last -> next;
 	}
-	//change the prev of the new node
+	//Change the prev of the new node.
 	new_node -> prev = last;
-	//change the next of the new node
+	//Change the next of the new node.
 	last -> next = new_node;
 
-	//end the function
+	//End the function.
 	return;
-
 }
+
 /*
  * Requires:
  *   The "fp" argument must be a valid FILE pointer.
@@ -140,68 +149,72 @@ print_counts(FILE *fp, struct counts *cnts, const char *name,
 		fprintf(fp, "%8d", cnts->char_count);
 	fprintf(fp, " %s\n", name);
 }
+
 /**
  * Requires:
- *   The "head" argument must not be NULL and must point to an allocated structure of type "struct node*"
+ *   The "head" argument must not be NULL and must point to an allocated 
+ *   structure of type "struct node*".
  * Effects:
- *   Print out the file in "ASCIIbetical" order based on the filename
+ *   Print out the file in "ASCIIbetical" order based on the filename.
 */
 static void 
-print_sort(struct node* head, const bool char_flag, const bool word_flag, const bool line_flag)
+print_sort(struct node* head, const bool char_flag, const bool word_flag, 
+const bool line_flag)
 {
-    //Declare a "current" node for iteration
+    //Declare a "current" node for iteration.
     struct node* current;
-    //Iterate every node in the linked list until the entire list finishes
+    //Iterate every node in the linked list until the entire list finishes.
     while(head != NULL)
     {
-        //1. Initialize a "min" node with an initial reference to the head node
+        //1. Initialize a "min" node with an initial reference to 
+		//the head node.
         struct node* min = head;
-        //Assign head node to the current node
+        //Assign head node to the current node.
         current = head;
-        //Find the minimum file name -- the name has the lowest ASCII value
+        //Find the minimum file name -- the name has the lowest ASCII value.
         while(current != NULL)
-        {	//If not in ASCIIbetical order, make the current node the new new min node
+        {	//If not in ASCIIbetical order,make the current node new min node.
             if (strcmp(min -> data.file_name, current -> data.file_name) > 0)
             {
-                //2. Assign "currrent" node to be the "min" node if it is smaller than "min" node
+                //2. Assign "currrent" node to be the "min" node if it is 
+				//smaller than "min" node.
                 min = current;
             }
-            //3. Update current to continue, it is the tail when its next is NULL
+            //3. Update current to continue,it is the tail when its next is NULL.
             current = current -> next;
         }
-		//Print information of the file with lowest "ASCIIbetical" order
-        print_counts(stdout, &min -> data.count, min -> data.file_name, char_flag, word_flag, line_flag);
+		//Print information of the file with lowest "ASCIIbetical" order.
+        print_counts(stdout, &min -> data.count, min -> data.file_name, 
+		char_flag, word_flag, line_flag);
 
-		//Store references to min's next and prev nodes
+		//Store references to min's next and prev nodes.
 		struct node* prev = min -> prev;
 		struct node* next = min -> next;
-		//4. Remove the "min" current node from the linked list
-		//Let "head" be NULL when "min" is the only node in the list
+		//4. Remove the "min" current node from the linked list.
+		//Let "head" be NULL when "min" is the only node in the list.
 		if((min == head) && (next == NULL))
 		{
-			//End the sorting
+			//End the sorting.
 			head = NULL;
 		}
-		//If the "min" is the head, 
+		//If the "min" is the head, let the head to be the next node.
 		else if(min == head){
-			//Let the head to be the next node
 			head = next;
 			head -> prev = NULL;
 		}
-		//If "min" is the last node(the tail)
+		//If "min" is the last node(the tail).
 		else if(next == NULL){
 			prev -> next = NULL;
 		}
-		//If "min" is in the middle
+		//If "min" is in the middle.
 		else{
 			prev -> next = next;
 			next -> prev = prev;
 		}
-		//Free "min" from the memory;
+		//Free "min" from the memory.
 		Free(min);
     }
 }
-
 
 /*
  * Requires:
@@ -227,71 +240,75 @@ do_count(char *input_files[], const int nfiles, const bool char_flag,
     const bool word_flag, const bool line_flag, const bool test_flag)
 {
 	int error = 0;
-	// Create an instance of the count structs to store the totals
+	// Create an instance of the count structs to store the totals.
 	struct counts countTotal = {0,0,0};
-	// Initialize the head node to be NULL
+	// Initialize the head node to be NULL.
 	struct node* head = NULL;
-	//Iterate over each file
+	//Iterate over each file.
 	for (int i = 0; i < nfiles; i++){
-		//open the current file to read
+		//Open the current file to read.
 		FILE *cur_file = fopen(input_files[i], "r");
-		//Catch the error if we cannot open the file
+		//Catch the error if we cannot open the file.
 		if (cur_file == NULL){
 			app_error_fmt("cannot open file \'%s\'", input_files[i]);
-			//Set error value to 1
+			//Set error value to 1.
 			error = 1;
-			//Continue to the next file after reporting the eror
+			//Continue to the next file after reporting the eror.
 			continue;
 		}
 
-		// Create an instance of the file_count structure for the current file
+		// Create an instance of the file_count structure for the current file.
 		struct file_count currentFile_count;
 		currentFile_count.file_name = input_files[i];
 		currentFile_count.count.char_count = 0;
 		currentFile_count.count.line_count = 0;
 		currentFile_count.count.word_count = 0;
-		//Testing the cannot read file error
+		//Testing the cannot read file error.
 		if (test_flag){
 			 close(fileno(cur_file));
 		}
-		//Make prev_c initially a space
+		//Make prev_c initially a space.
 		int prev_c = 32;
-		//Create the character for the while loop
+		//Create the character for the while loop.
 		int c;
-		//Iterate over each character in the file until the end of the file is reached
+		//Iterate over each character in the file until the end of the 
+		//file is reached.
 		while ((c = fgetc(cur_file)) != EOF){
-			//Update the total and current file character count
+			//Update the total and current file character count.
 			countTotal.char_count += 1;
 			currentFile_count.count.char_count += 1;
 
-			//Check if we have begun a new word, and update the word counts to account for the previous word. 
-			//A word is detected for 
-			//1. it is not a space. 
-			//2. the previous character is a space
+			/**
+			 * Check if we have begun a new word, and update the word counts 
+			 * to account for the previous word. A word is detected for:
+			 * 1. it is not a space. 
+			 * 2. the previous character is a space.
+			*/
 			if (!isspace(c) && isspace(prev_c)){
 				countTotal.word_count += 1;
 				currentFile_count.count.word_count += 1;
 			}
-			//Update line count when the current character is the new line character
+			//Update line count when the current character is the new line char.
 			if (c == '\n'){
 				countTotal.line_count += 1;
 				currentFile_count.count.line_count += 1;
 			}
-			//Set the previous character to the current character for the next iteration
+			//Set the previous character to the current character for the 
+			//next iteration.
 			prev_c = c;
 
 		}
-		//Catch the error when the file cannot be read
+		//Catch the error when the file cannot be read.
 		if(!feof(cur_file)){
 			app_error_fmt("cannot read file \'%s\'", input_files[i]);
 			error = 1;
 		}
-		//Append your current file's node to the linked list
+		//Append your current file's node to the linked list.
 		append(&head, currentFile_count);
 	}
-	//Print the counts in ASCIIbetical order
+	//Print the counts in ASCIIbetical order.
 	print_sort(head, char_flag, word_flag, line_flag);
-	//If the flag is false, we still want to print it, but its count value is 0
+	//If the flag is false, we still want to print it, but its count value is 0.
 	if (!char_flag){
 		countTotal.char_count = 0;
 	}
@@ -301,7 +318,7 @@ do_count(char *input_files[], const int nfiles, const bool char_flag,
 	if(!line_flag){
 		countTotal.line_count = 0;
 	}
-	//Print total counts
+	//Print total counts.
 	print_counts(stdout, &countTotal, "total", true, true, true);
 	return (error);
 }

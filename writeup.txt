@@ -7,78 +7,130 @@ TESTING STRATEGY
 
 Black Box Testig Strategy: <
 
-1. Input file only contains an empty line, should return 1 word, 0 line, 
-and 1 character.
+1. Input file only contains a new line character, should return 1 line, 0 word, 
+and 1 character, to test that a new line character is counted as both a line 
+and as a character.
 
-2. Input file only contains many, n for example, empty lines, should 
-return n line, 0 word, and n character. 
+2. Input file is a big file with many lines, to test that the program can count
+every lines, words, charaters correctly in a very large file.
 
-3. Input file contains many odd characters such as % & ( @ ! *)
+3. Input is one line with no new line character, to test that the new line 
+character is not counted with every line, but is only counted when we type 
+"enter" to add a new line in the file.
 
-4. Input file contains new lines in weird places. 
-eg. New lines in between large chunks of texts, new line at the beginning 
-or the end of the file, or many new lines in between texts.              //should i say new line or empty line here??
+4. Input many files that contains many error files, to test that the program
+ can print out the error message as it encounter the error files, and then 
+ move on to count the next file. 
 
-5. Input files with names that are of different ASCIIbetical orders.
-eg. file_name = 0.txt, file_name = xyz, file_name = XYZ， file_name = abc
+5. Input is an empty file, to test that the program can print out 0 line, 
+0 word, and 0 character 
 
-6. Input file contains odd words such as @#$^%&^*&)()_  and hyphenated words.
+6. Input file contains only one word, should print 0 line and 1 word, to test 
+that only one word and the number of characters it has is counted. 
 
-7. Input file has text and multiple empty lines.
+7. Input files are all error files that cannot open, to test that the error 
+message are printed out for all the error files.
 
-8. Input file only contains double spaces.
+8. Input many files to see results are printed out in “ASCIIbetical” order 
+based on the filename.
 
-9. Input files are all error files
+9. Input files with long names to see each file is sorted in “ASCIIbetical” 
+order by each character in the file name, and are not sorted in “alphabetical”
+order. 
 
-10. The first input file is an invalid file
+10. Input only one space to test that the result print 0 line, 0 word, 
+and 1 character, because a space is only counted as a character. 
 
-11. Input files that does not exist. 
-
-12. Input files are a mix of valid files and invalid files.
-
-13. Input file only has one word.
-
-14. Input file only has one character.
-
-15. Input files are multiple files of the same file.
-
+11. Input files are multiple files of the same file, to test that 
+each file are counted even though they are the same.
 >
 
-（NOETEs:
-new lines in weird places
-weird decision point, make sure adding that points correctly
-how to do with haffiniated word, 
+White Box Testing Strategy(categorized by function): <
 
+For Function append: <
 
-what can mess up my program
+	1. Line 106 has edge case that if the linked list is empty, we should let 
+the new node becomes the head node and terminate the function. 
+The test case "input is an empty file" can handle this edge case as the program 
+should print out 0 line, 0 word, and 0 character. 
 
-Ordering in the linked list.
+	2. Line 113 has edge case that if the linked list is not empty, we should 
+traverse the linked list until we reach the last node, and update the last 
+node to point to the next node. 
+The test case "input many files" can handle this edge case, because it allows
+us to see if results are successfully printed out in “ASCIIbetical” order 
+based on the filename.
+>
 
-points to locations that does not exist）
+For Function print_sort: <
 
+	1. Line 167 has edge case that if the linked list is not empty, we need to 
+make sure every node in the linked list is iterated until the entire list 
+finishes. The test case "input many files" can handle this edge case, 
+because it allows us to see if results are successfully printed out in 
+“ASCIIbetical” order based on the filename.
 
-White Box Testing Strategy(categorized by function) <
+	2. Line 177 has edge case that the input file might not in ASCIIbetical 
+order. We can input multiple files that are not ordered in "ASCIIbetical" 
+order to ensure that every input files are printed out in “ASCIIbetical” 
+order based on the filename. 
 
-1. The input file is empty, to test line295-303. 
-2. The input file has only one character/word
-3. The input files has file names that are not in ASCIIbetical order
-4. ... to ensure that the program print error and stops 
-5. To test line 269: a input file that has many random spaces between texts, to ensure A word is detected for 
-			1. it is not a space. 
-			2. the previous character is a space
-6. Input file is a new line. To test line 276: Update line count when the current character is the new line character
-7. Test that the program catches the error when the file cannot be read and stops
-8. 
+	3. Line 195 has edge case that there is only one file as input. 
+By only inputing one file, we ensure that a single file name is printed.
 
+	4. Line 201 has edge case that the first filename has the lowest 
+ASCIIbetical order.
+We can input multiple files among which the first filename has the 
+lowest ASCIIbetical order to ensure that the sorting continues onto the next 
+node.
 
+	5. Line 201 has edge case that the last filename has the lowest 
+ASCIIbetical order.
+We can input multiple files among which the last filename has the lowest 
+ASCIIbetical order to ensure that the filename in the lowest ASCIIbetical 
+order is sorted to be printed out first.
 
+	6. Line 210 has edge case that the filename in the middle of other 
+filenames has the lowest ASCIIbetical order.
+We can input multiple files among which the filename in the middle has 
+the lowest ASCIIbetical order to ensure that the filename in the lowest 
+ASCIIbetical order is sorted to be printed out first.
+>
 
-weird cases
-how to count c, l, w. 
-Try to find edge case that might mess up.
-A file does not have a new line at the end.
-counting the last word.
-Invalid name that does not exist.
-New line is a character.
+For Function do_count: <
+
+	1. Line 247 has edge case that the input contains a great number of files. 
+The test case "input a large number of valid, correct files" can test that the 
+program can do count in every input file and print out every filename. 
+
+	2. Line 252 has edge case that the input file is an invalid, error file 
+that cannot open. The test case "input many files that contains many error 
+files" can test that the program can print out the error message as it 
+encounter the error files, set error value to 1, and then move on to count 
+the next file. 
+
+	3. Line 276 has edge case that the input file is a very large file 
+that contains many lines and many characters. 
+The test case "input file is a big file with many characters" can 
+be used to test that the program can count every charaters correctly in a very 
+large file.
+
+	4. Line 287 has edge case that the current character is an empty space and 
+its previous character is not a space.
+The test case "input file that contains many empty spaces in between words" 
+can be used to ensure that words are detected and counted correctly, 
+and spaces are not counted as words. 
+
+	5. Line 292 has edge case that there is no line character in one line. 
+The test case "input is one line with no new line character" can be used to 
+test that the new line character is not counted with every line, but is only 
+counted when we type "enter" to add a new line in the file.
+
+	6. Line 312-320 has edge cases that the input file is empty. 
+Since if no flags are specified, then nothing should be counted, but
+empty results for each file should still be printed, the test case that 
+"input file is empty" can be used to ensure that the result should be
+0 line, 0 word, and 0 character in total. 
+>
 
 >
